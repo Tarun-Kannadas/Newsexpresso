@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
         observeViewModel()
 
-        viewModel.getTopHeadlines("us") // You can change the country code if needed
+        viewModel.getTopHeadlines()
     }
 
     private fun setupRecyclerView() {

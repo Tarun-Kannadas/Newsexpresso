@@ -1,5 +1,6 @@
 package com.example.newsapp.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.newsapp.model.Article
 import com.example.newsapp.model.NewsResponse
 import com.example.newsapp.repository.NewsRepository
+import com.example.newsapp.util.Constants
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
@@ -23,22 +25,25 @@ class NewsViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
-    fun getTopHeadlines(country: String = "us") {
+    fun getTopHeadlines(country: String = "us", category: String = "business") {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 val response: Response<NewsResponse> = newsRepository.getTopHeadlines(
                     country,
-                    "bada598e0a894693b9d0a416016002cc" // Your API key here
+                    category,
+                    Constants.API_KEY
                 )
                 if (response.isSuccessful && response.body() != null) {
                     _articles.value = response.body()!!.articles
                     _errorMessage.value = null
                 } else {
-                    _errorMessage.value = "Error: ${response.message()}"
+                    Log.d("API_RESPONSE", response.toString())
+                    Log.d("API_BODY", response.body().toString())
+                    _errorMessage.value = "Error: ${response.code()} - ${response.errorBody()?.string() ?: "No error message"}"
                 }
             } catch (e: Exception) {
-                _errorMessage.value = "Exception: ${e.message}"
+                _errorMessage.value = "Exception: ${e.localizedMessage ?: "Unexpected error"}"
             } finally {
                 _isLoading.value = false
             }

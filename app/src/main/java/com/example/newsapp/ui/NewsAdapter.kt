@@ -9,9 +9,9 @@ import com.bumptech.glide.Glide
 import com.example.newsapp.R
 import com.example.newsapp.databinding.ItemArticleBinding
 import com.example.newsapp.model.Article
-import com.example.newsapp.ui.ArticleDetailActivity
 
-class NewsAdapter(private val articles: List<Article>) : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
+class NewsAdapter(private var articles: List<Article>) :
+    RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
 
     inner class ArticleViewHolder(val binding: ItemArticleBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -22,19 +22,19 @@ class NewsAdapter(private val articles: List<Article>) : RecyclerView.Adapter<Ne
 
     override fun onBindViewHolder(holder: ArticleViewHolder, position: Int) {
         val article = articles[position]
-
         holder.binding.apply {
             tvTitle.text = article.title
             tvSource.text = article.source?.name
             tvPublishedAt.text = article.publishedAt?.substring(0, 10)
 
-            if (!article.urlToImage.isNullOrBlank())
-            {
+            if (!article.urlToImage.isNullOrBlank()) {
                 ivArticleImage.visibility = View.VISIBLE
-                Glide.with(ivArticleImage.context).load(article.urlToImage).placeholder(R.drawable.placeholder_image).error(R.drawable.placeholder_image).into(ivArticleImage)
-            }
-            else
-            {
+                Glide.with(ivArticleImage.context)
+                    .load(article.urlToImage)
+                    .placeholder(R.drawable.placeholder_image)
+                    .error(R.drawable.placeholder_image)
+                    .into(ivArticleImage)
+            } else {
                 ivArticleImage.visibility = View.GONE
             }
 
@@ -47,6 +47,11 @@ class NewsAdapter(private val articles: List<Article>) : RecyclerView.Adapter<Ne
         }
     }
 
-    override fun getItemCount() = articles.size
+    fun submitList(newList: List<Article>) {
+        articles = newList
+        notifyDataSetChanged()
+    }
 
+    override fun getItemCount(): Int = articles.size
 }
+
